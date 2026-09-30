@@ -432,13 +432,14 @@ export const TicketsView: React.FC<TicketsViewProps> = ({ onNewTicketClick }) =>
                     placeholder="Add internal note..."
                     className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
                   />
-                  <button
+                  <MagneticButton
+                    strength={0.2}
                     type="submit"
                     disabled={!newNoteText.trim()}
-                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium disabled:opacity-40 cursor-pointer"
+                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium disabled:opacity-40 cursor-pointer shadow-2xs"
                   >
                     Add
-                  </button>
+                  </MagneticButton>
                 </form>
               </div>
             </div>
@@ -453,13 +454,14 @@ export const TicketsView: React.FC<TicketsViewProps> = ({ onNewTicketClick }) =>
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Ticket</span>
               </button>
-              <button
+              <MagneticButton
+                strength={0.2}
                 type="button"
                 onClick={() => setSelectedTicket(null)}
-                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded-lg cursor-pointer"
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-lg cursor-pointer"
               >
                 Done
-              </button>
+              </MagneticButton>
             </div>
           </div>
         </div>

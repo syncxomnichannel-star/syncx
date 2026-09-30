@@ -20,6 +20,7 @@ import {
   Users
 } from 'lucide-react';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { MagneticButton } from './MagneticButton';
 import { useCustomization } from '../context/CustomizationContext';
 import { ChannelType } from '../types';
 
@@ -223,13 +224,14 @@ export const SettingsView: React.FC = () => {
             </div>
 
             <div className="flex justify-end">
-              <button
+              <MagneticButton
+                strength={0.22}
                 type="submit"
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center space-x-1.5"
               >
                 {isSaving ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Save className="w-3.5 h-3.5" />}
                 <span>{isSaving ? 'Saved Changes' : 'Save Profile'}</span>
-              </button>
+              </MagneticButton>
             </div>
           </form>
 
@@ -453,13 +455,14 @@ export const SettingsView: React.FC = () => {
                 Integration keys for webhook gateways and backend services
               </p>
             </div>
-            <button
+            <MagneticButton
+              strength={0.22}
               type="button"
               onClick={handleGenerateKey}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium shadow-2xs transition-colors cursor-pointer"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
             >
               Generate Key
-            </button>
+            </MagneticButton>
           </div>
 
           <div className="space-y-3">
@@ -582,14 +585,15 @@ export const SettingsView: React.FC = () => {
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-            <button
+            <MagneticButton
+              strength={0.22}
               type="button"
               onClick={() => exportReport('json')}
-              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-medium flex items-center space-x-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-semibold flex items-center space-x-1.5 cursor-pointer shadow-2xs transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export Report (JSON)</span>
-            </button>
+            </MagneticButton>
           </div>
         </div>
       )}

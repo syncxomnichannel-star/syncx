@@ -443,7 +443,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                     {resendCountdown > 0 ? `Resend code in ${resendCountdown}s` : 'Resend Code'}
                   </button>
 
-                  <button
+                  <MagneticButton
+                    strength={0.22}
                     type="button"
                     disabled={isVerifyingOtp || otpDigits.join('').length < 6}
                     onClick={handleVerifyOtp}
@@ -460,7 +461,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                         <span>Verify Code</span>
                       </>
                     )}
-                  </button>
+                  </MagneticButton>
                 </div>
               </div>
             )}

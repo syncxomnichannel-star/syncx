@@ -8,6 +8,7 @@ import { SettingsView } from './components/SettingsView';
 import { Sidebar } from './components/Sidebar';
 import { TicketsView } from './components/TicketsView';
 import { ToastContainer } from './components/ToastContainer';
+import { MagneticButton } from './components/MagneticButton';
 import { CustomizationProvider, useCustomization } from './context/CustomizationContext';
 import { NavTabId } from './types';
 import { Check } from 'lucide-react';
@@ -63,13 +64,14 @@ const MainLayout: React.FC = () => {
           <span className="text-xs text-slate-300 hidden sm:inline">
             Click on any title or text to edit in-place.
           </span>
-          <button
+          <MagneticButton
+            strength={0.22}
             onClick={toggleEditMode}
             className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1"
           >
             <Check className="w-3.5 h-3.5" />
             <span>Finish Editing</span>
-          </button>
+          </MagneticButton>
         </div>
       )}
 

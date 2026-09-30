@@ -359,13 +359,13 @@ export const demoMetrics: MetricCardData[] = [
     trend: [0, 0, 0, 0, 0]
   },
   {
-    id: 'metric-frt',
-    title: 'Avg. First Response Time',
-    value: '1m 24s',
-    change: '-18.2%',
+    id: 'metric-resolved',
+    title: 'Total Resolved Tickets',
+    value: '0',
+    change: '+0.0%',
     isPositive: true,
-    period: 'realtime metrics',
-    trend: [120, 110, 95, 88, 84]
+    period: 'resolved queue',
+    trend: [0, 0, 0, 0, 0]
   },
   {
     id: 'metric-messages',

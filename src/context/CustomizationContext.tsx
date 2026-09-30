@@ -271,11 +271,14 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
             period: 'customer feedback index'
           };
         }
-        if (m.id === 'metric-frt') {
+        if (m.id === 'metric-resolved' || m.id === 'metric-frt') {
           return {
             ...m,
-            value: totalCount === 0 ? '0s' : timeRange === 'today' ? '54s' : timeRange === '7d' ? '1m 24s' : '1m 48s',
-            period: `${timeRange} average SLA`
+            id: 'metric-resolved',
+            title: 'Total Resolved Tickets',
+            value: `${resolvedCount}`,
+            change: totalCount > 0 ? `+${Math.round((resolvedCount / totalCount) * 100)}%` : '+0.0%',
+            period: timeRange === 'today' ? 'today’s resolved' : `${timeRange} resolved tickets`
           };
         }
         if (m.id === 'metric-messages') {

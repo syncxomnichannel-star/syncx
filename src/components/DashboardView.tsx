@@ -27,8 +27,9 @@ const getMetricIcon = (id: string) => {
   switch (id) {
     case 'metric-tickets':
       return TicketIcon;
+    case 'metric-resolved':
     case 'metric-frt':
-      return Clock;
+      return CheckCircle2;
     case 'metric-messages':
       return MessageSquare;
     case 'metric-csat':

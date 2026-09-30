@@ -82,3 +82,8 @@ export async function deleteTicket(id: string): Promise<boolean> {
   ticketsStore = ticketsStore.filter(t => t.id !== id);
   return ticketsStore.length < prevLen;
 }
+
+export async function clearAllTickets(): Promise<void> {
+  ticketsStore = [];
+}
+

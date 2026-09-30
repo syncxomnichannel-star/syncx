@@ -218,6 +218,15 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
       return;
     }
 
+    // Optional Phone validation: limit to 10 digits
+    if (customerPhone.trim()) {
+      const digitsOnly = customerPhone.replace(/\D/g, '');
+      if (digitsOnly.length !== 10) {
+        setFormError('Phone number must be exactly 10 digits if provided.');
+        return;
+      }
+    }
+
     // 4. Mandatory SMTP 6-digit OTP Verification
     if (!isEmailVerified || verifiedEmail !== cleanEmail) {
       if (!showOtpPanel) {
@@ -456,21 +465,34 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
               </div>
             )}
 
-            {/* Phone Number (Optional) */}
+            {/* Phone Number (Optional - Limit 10 digits) */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Phone Number <span className="text-slate-400 font-normal">(Optional)</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Phone Number <span className="text-slate-400 font-normal">(Optional)</span>
+                </label>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  {customerPhone.length}/10 digits
+                </span>
+              </div>
               <div className="relative">
                 <input
                   type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
                   value={customerPhone}
-                  onChange={e => setCustomerPhone(e.target.value)}
-                  placeholder="+1 (555) 349-8201"
-                  className="w-full pl-9 pr-3 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-normal text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100 transition-all"
+                  onChange={e => {
+                    const onlyDigits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setCustomerPhone(onlyDigits);
+                  }}
+                  placeholder="e.g. 9876543210"
+                  className="w-full pl-9 pr-14 py-2 bg-slate-50/80 border border-slate-200 rounded-xl text-xs font-normal text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100 transition-all font-mono"
                 />
                 <Smartphone className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               </div>
+              <p className="text-[10px] text-slate-400 mt-1">
+                Limit: 10 digits. Numbers only.
+              </p>
             </div>
           </div>
 

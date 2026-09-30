@@ -247,12 +247,13 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  // Recalculate metrics when tickets or timeRange changes
+  // Recalculate metrics when tickets, conversations, or timeRange changes
   useEffect(() => {
     const openCount = tickets.filter(t => t.status !== 'Resolved').length;
     const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
     const totalCount = tickets.length;
     const csatPercent = totalCount > 0 ? (98.2 + (resolvedCount * 0.1)).toFixed(1) : '100.0';
+    const totalMessages = conversations.reduce((acc, c) => acc + (c.messages ? c.messages.length : 0), 0);
 
     setMetrics(prev =>
       prev.map(m => {
@@ -273,14 +274,36 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
         if (m.id === 'metric-frt') {
           return {
             ...m,
-            value: timeRange === 'today' ? '54s' : timeRange === '7d' ? '1m 24s' : '1m 48s',
+            value: totalCount === 0 ? '0s' : timeRange === 'today' ? '54s' : timeRange === '7d' ? '1m 24s' : '1m 48s',
             period: `${timeRange} average SLA`
+          };
+        }
+        if (m.id === 'metric-messages') {
+          return {
+            ...m,
+            value: totalMessages.toLocaleString(),
+            period: 'live intake'
           };
         }
         return m;
       })
     );
-  }, [tickets, timeRange]);
+
+    // Dynamic Channel Volume
+    setChannelVolume(prev =>
+      prev.map(chan => {
+        const chanConvs = conversations.filter(c => c.channel.toLowerCase() === chan.type.toLowerCase());
+        const count = chanConvs.reduce((acc, c) => acc + (c.messages ? c.messages.length : 0), 0);
+        const percent = totalMessages > 0 ? Math.round((count / totalMessages) * 100) : 0;
+        return {
+          ...chan,
+          count: `${count} msgs`,
+          messagesCount: count,
+          percent
+        };
+      })
+    );
+  }, [tickets, conversations, timeRange]);
 
   // Active conversation helper
   const activeConversation = conversations.find(c => c.id === activeConversationId) || null;
@@ -290,6 +313,23 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   const createTicket = async (ticketInput: Omit<Ticket, 'id' | 'createdAt'>): Promise<Ticket> => {
     const newTicket = await services.createTicket(ticketInput);
     setTickets(prev => [newTicket, ...prev]);
+
+    // Link newly created real ticket into omnichannel conversation inbox
+    try {
+      const newConv = await services.createConversationForTicket({
+        id: newTicket.id,
+        customerName: newTicket.customerName,
+        customerEmail: newTicket.customerEmail,
+        customerPhone: newTicket.customerPhone,
+        channel: newTicket.channel,
+        subject: newTicket.subject,
+        description: newTicket.description
+      });
+      setConversations(prev => [newConv, ...prev.filter(c => c.id !== newConv.id)]);
+      setActiveConversationId(newConv.id);
+    } catch (e) {
+      console.error('Failed to link ticket to conversation:', e);
+    }
 
     // Log Activity
     const act = await services.logActivity({
@@ -334,6 +374,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   const deleteTicket = async (id: string): Promise<void> => {
     await services.deleteTicket(id);
     setTickets(prev => prev.filter(t => t.id !== id));
+    setConversations(prev => prev.filter(c => c.ticketId !== id));
     showToast('Ticket Removed', `Ticket #${id} was deleted from the view.`, 'info');
   };
 

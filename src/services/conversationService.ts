@@ -157,3 +157,50 @@ export async function simulateIncomingMessage(
   const message = await sendMessage(conv.id, candidate.text, candidate.customerName, false);
   return { conversation: JSON.parse(JSON.stringify(conv)), message };
 }
+
+export async function createConversationForTicket(ticket: {
+  id: string;
+  customerName: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  channel: ChannelType;
+  subject: string;
+  description?: string;
+}): Promise<Conversation> {
+  const newConv: Conversation = {
+    id: `conv-${ticket.id.toLowerCase()}`,
+    customerId: `cust-${Date.now()}`,
+    customerName: ticket.customerName,
+    customerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+    customerEmail: ticket.customerEmail || `${ticket.customerName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+    customerPhone: ticket.customerPhone,
+    company: 'Customer Account',
+    channel: ticket.channel,
+    unreadCount: 1,
+    lastMessage: ticket.description || ticket.subject,
+    lastMessageTime: 'Just now',
+    status: 'active',
+    ticketId: ticket.id,
+    messages: [
+      {
+        id: `msg-${Date.now()}`,
+        conversationId: `conv-${ticket.id.toLowerCase()}`,
+        sender: ticket.customerName,
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+        text: ticket.description || ticket.subject,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isAgent: false,
+        channel: ticket.channel,
+        status: 'delivered'
+      }
+    ]
+  };
+
+  conversationsStore = [newConv, ...conversationsStore];
+  return { ...newConv };
+}
+
+export async function clearAllConversations(): Promise<void> {
+  conversationsStore = [];
+}
+

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { subscribeToSupabaseRealtime } from '../lib/supabase';
 import {
   demoAgents,
   demoBranding,
@@ -208,7 +209,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  // Initialize data on mount from service layer
+  // Initialize data on mount from service layer & setup Realtime subscription
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
@@ -228,7 +229,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           setTickets(loadedTickets);
           setConversations(loadedConversations);
           if (loadedConversations.length > 0) {
-            setActiveConversationId(loadedConversations[0].id);
+            setActiveConversationId(prev => prev || loadedConversations[0].id);
           }
           setActivities(loadedActivities);
           setChannels(loadedChannels);
@@ -236,14 +237,27 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           setCurrentUser(loadedUser);
         }
       } catch (err) {
-        console.error('Failed to load initial demo data:', err);
+        console.error('Failed to load initial data:', err);
       } finally {
         if (isMounted) setIsTicketsLoading(false);
       }
     }
+
     loadData();
+
+    // Setup Supabase Realtime Listener for live updates from n8n & 7 AI Agents
+    const unsubscribe = subscribeToSupabaseRealtime(
+      () => {
+        services.getTickets().then(t => isMounted && setTickets(t));
+      },
+      () => {
+        services.getConversations().then(c => isMounted && setConversations(c));
+      }
+    );
+
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, []);
 

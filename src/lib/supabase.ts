@@ -719,32 +719,37 @@ export async function insertMessageToSupabase(msg: {
  */
 export function subscribeToSupabaseRealtime(
   onTicketsChange: () => void,
-  onMessagesChange: () => void
+  onConversationsChange: () => void
 ) {
   try {
-    const ticketChannel = supabase
-      .channel('syncid-tickets-realtime')
+    const liveChannel = supabase
+      .channel('syncid-omnichannel-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, () => {
         onTicketsChange();
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'syncid_conversations' }, () => {
+        onConversationsChange();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'syncid_messages' }, () => {
+        onConversationsChange();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'syncid_escalations' }, () => {
+        onTicketsChange();
+        onConversationsChange();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'syncid_live_support' }, () => {
         onTicketsChange();
       })
-      .subscribe();
-
-    const messageChannel = supabase
-      .channel('syncid-messages-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
-        onMessagesChange();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'syncid_agent_events' }, () => {
+        onTicketsChange();
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(ticketChannel);
-      supabase.removeChannel(messageChannel);
+      supabase.removeChannel(liveChannel);
     };
   } catch (e) {
-    console.warn('Realtime subscription error:', e);
+    console.warn('Realtime subscription warning:', e);
     return () => {};
   }
 }

@@ -35,10 +35,10 @@ function smtpOtpPlugin(): Plugin {
               const env = loadEnv('development', process.cwd(), '');
               const host = env.SMTP_HOST || env.MAIL_HOST || 'smtp.gmail.com';
               const port = Number(env.SMTP_PORT || env.MAIL_PORT) || 587;
-              const user = env.SMTP_USER || env.MAIL_USERNAME || 'gowthamvignesh270@gmail.com';
-              const rawPass = env.SMTP_PASS || env.MAIL_PASSWORD || 'nwrn gysh muwl iyoi';
-              const pass = rawPass.replace(/["']/g, '');
-              const fromName = (env.SMTP_FROM_NAME || env.MAIL_FROM_NAME || 'SYNCID Support').replace(/["']/g, '');
+              const user = env.SMTP_USER || env.MAIL_USERNAME || 'syncx.omnichannel@gmail.com';
+              const rawPass = env.SMTP_PASS || env.MAIL_PASSWORD || 'mait cgcs mbma kkgg';
+              const pass = rawPass.replace(/["'\s]/g, '');
+              const fromName = (env.SMTP_FROM_NAME || env.MAIL_FROM_NAME || 'SyncX Support').replace(/["']/g, '');
               const fromEmail = env.SMTP_FROM_EMAIL || env.MAIL_FROM_ADDRESS || user;
 
               const transporter = nodemailer.createTransport({
@@ -52,18 +52,18 @@ function smtpOtpPlugin(): Plugin {
               await transporter.sendMail({
                 from: `"${fromName}" <${fromEmail}>`,
                 to: cleanEmail,
-                subject: `Your SYNCID Verification Code: ${code}`,
-                text: `Hello,\n\nYour SYNCID verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nThank you,\nSYNCID Support Team`,
+                subject: `Your SyncX Verification Code: ${code}`,
+                text: `Hello,\n\nYour SyncX verification code is: ${code}\n\nThis code will expire in 10 minutes.\n\nThank you,\nSyncX Support Team`,
                 html: `
                   <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
                     <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 16px; margin-bottom: 20px;">
-                      <h2 style="margin: 0; color: #0f172a; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">SYNCID <span style="font-size: 14px; font-weight: 500; color: #64748b;">Verification</span></h2>
+                      <h2 style="margin: 0; color: #0f172a; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">SyncX <span style="font-size: 14px; font-weight: 500; color: #6366f1;">Verification</span></h2>
                     </div>
                     <p style="color: #334155; font-size: 15px; line-height: 1.6; margin: 0 0 16px;">
-                      Please enter the verification code below to verify your email and complete your customer ticket request:
+                      Please enter the 6-digit verification code below to verify your email and complete your customer ticket request:
                     </p>
                     <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 20px; text-align: center; margin: 24px 0;">
-                      <div style="font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #0284c7; font-family: monospace;">${code}</div>
+                      <div style="font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #4f46e5; font-family: monospace;">${code}</div>
                       <div style="color: #64748b; font-size: 12px; margin-top: 6px; font-weight: 500;">Valid for 10 minutes</div>
                     </div>
                     <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin: 0;">
@@ -130,6 +130,14 @@ function smtpOtpPlugin(): Plugin {
           return;
         }
 
+        next();
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.url === '/api/send-otp' || req.url === '/api/verify-otp') {
+          // delegate to same handler
+        }
         next();
       });
     }

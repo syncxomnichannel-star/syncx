@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Activity,
   ArrowUpRight,
@@ -13,13 +13,74 @@ import {
   Download
 } from 'lucide-react';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { MagneticButton } from './MagneticButton';
 import { useCustomization } from '../context/CustomizationContext';
-import { ChannelType, NavTabId } from '../types';
+import { ChannelType, MetricCardData, NavTabId } from '../types';
 
 interface DashboardViewProps {
   onOpenNewTicket: () => void;
   onNavigateTab?: (tab: NavTabId) => void;
 }
+
+/**
+ * Interactive KPI Card with Apple-grade cursor spotlight
+ * and tactile "shadowed-in" inset depth on hover.
+ */
+const InteractiveKpiCard: React.FC<{ metric: MetricCardData }> = ({ metric }) => {
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos(null);
+  };
+
+  return (
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative bg-white border border-slate-200/70 rounded-xl p-4 sm:p-5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.02),0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-[inset_0_2px_5px_rgba(15,23,42,0.05),0_12px_28px_-6px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-slate-300 transition-all duration-200 ease-out overflow-hidden group cursor-pointer"
+    >
+      {/* Dynamic Cursor Spotlight Effect */}
+      {mousePos && (
+        <div
+          className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(220px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.05), transparent 70%)`
+          }}
+        />
+      )}
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">
+            {metric.title}
+          </span>
+          <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-slate-600 bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200/60 group-hover:scale-105 group-hover:border-slate-300 transition-all">
+            <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+            {metric.change}
+          </span>
+        </div>
+
+        <div className="flex items-baseline justify-between">
+          <p className="text-2xl font-semibold text-slate-900 tracking-tight group-hover:text-indigo-950 transition-colors">
+            {metric.value}
+          </p>
+        </div>
+
+        <p className="text-[11px] text-slate-400 mt-1 font-normal">
+          {metric.period}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenNewTicket,
@@ -88,48 +149,29 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             ))}
           </div>
 
-          {/* Export Report Action */}
-          <button
-            type="button"
+          {/* Magnetic CTA Export Report Action */}
+          <MagneticButton
+            strength={0.25}
             onClick={() => exportReport('json')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 rounded-lg text-xs font-medium shadow-2xs transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300 text-slate-700 rounded-lg text-xs font-medium shadow-2xs transition-colors"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Export</span>
-          </button>
+            <span>Export Report</span>
+          </MagneticButton>
         </div>
       </div>
 
-      {/* 4 Clean Metric KPI Cards */}
+      {/* 4 Interactive KPI Cards with Inset Depth and Cursor Spotlight */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map(metric => (
-          <div
-            key={metric.id}
-            className="bg-white border border-slate-200/70 rounded-xl p-4 sm:p-5 shadow-2xs transition-colors hover:border-slate-300"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-500">{metric.title}</span>
-              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-slate-600 bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200/60">
-                <ArrowUpRight className="w-3 h-3 text-slate-400" />
-                {metric.change}
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <p className="text-2xl font-semibold text-slate-900 tracking-tight">
-                {metric.value}
-              </p>
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-normal">
-              {metric.period}
-            </p>
-          </div>
+          <InteractiveKpiCard key={metric.id} metric={metric} />
         ))}
       </div>
 
       {/* Two Column Layout: Channel Breakdown & Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Channel Volume Breakdown (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-slate-200/70 rounded-xl p-5 shadow-2xs space-y-4">
+        <div className="lg:col-span-7 bg-white border border-slate-200/70 rounded-xl p-5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.02),0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-[inset_0_2px_4px_rgba(15,23,42,0.04),0_10px_24px_-6px_rgba(15,23,42,0.06)] hover:border-slate-300 transition-all duration-200 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h4 className="text-sm font-semibold text-slate-900">
@@ -173,7 +215,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Live Operational Activity Timeline (5 cols) */}
-        <div className="lg:col-span-5 bg-white border border-slate-200/70 rounded-xl p-5 shadow-2xs space-y-4">
+        <div className="lg:col-span-5 bg-white border border-slate-200/70 rounded-xl p-5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.02),0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-[inset_0_2px_4px_rgba(15,23,42,0.04),0_10px_24px_-6px_rgba(15,23,42,0.06)] hover:border-slate-300 transition-all duration-200 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
               <h4 className="text-sm font-semibold text-slate-900">

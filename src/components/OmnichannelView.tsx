@@ -23,8 +23,10 @@ import {
   Zap
 } from 'lucide-react';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { MagneticButton } from './MagneticButton';
 import { useCustomization } from '../context/CustomizationContext';
 import { AISuggestion, ChannelType, Conversation, ChatMessage } from '../types';
+
 
 interface OmnichannelViewProps {
   onOpenNewTicket: () => void;
@@ -404,14 +406,14 @@ export const OmnichannelView: React.FC<OmnichannelViewProps> = ({ onOpenNewTicke
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
+                  <MagneticButton
+                    strength={0.22}
                     onClick={onOpenNewTicket}
-                    className="flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded-lg transition-colors cursor-pointer"
+                    className="flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded-lg transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Create Ticket</span>
-                  </button>
+                  </MagneticButton>
                 </div>
               </div>
 
@@ -481,11 +483,11 @@ export const OmnichannelView: React.FC<OmnichannelViewProps> = ({ onOpenNewTicke
                     </span>
                   </div>
 
-                  <button
-                    type="button"
+                  <MagneticButton
+                    strength={0.25}
                     onClick={handleGenerateAI}
                     disabled={isGeneratingAI}
-                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-800 rounded-md text-xs font-medium transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+                    className="flex items-center space-x-1.5 px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200/80 hover:border-slate-300 text-slate-800 rounded-md text-xs font-medium transition-colors disabled:opacity-50 shadow-2xs"
                   >
                     {isGeneratingAI ? (
                       <>
@@ -498,7 +500,7 @@ export const OmnichannelView: React.FC<OmnichannelViewProps> = ({ onOpenNewTicke
                         <span>Generate AI Reply</span>
                       </>
                     )}
-                  </button>
+                  </MagneticButton>
                 </div>
 
                 {/* AI Loading State */}
@@ -547,14 +549,15 @@ export const OmnichannelView: React.FC<OmnichannelViewProps> = ({ onOpenNewTicke
                           {copiedDraft ? 'Copied' : 'Copy'}
                         </button>
 
-                        <button
+                        <MagneticButton
+                          strength={0.22}
                           type="button"
                           onClick={handleInsertReply}
-                          className="px-2.5 py-0.5 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-medium cursor-pointer flex items-center gap-1 shadow-2xs"
+                          className="px-2.5 py-0.5 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-medium flex items-center gap-1 shadow-2xs"
                         >
                           <CornerDownLeft className="w-3 h-3" />
                           <span>Insert Reply</span>
-                        </button>
+                        </MagneticButton>
 
                         <button
                           type="button"
@@ -636,17 +639,19 @@ export const OmnichannelView: React.FC<OmnichannelViewProps> = ({ onOpenNewTicke
                     </span>
                   </div>
 
-                  <button
+                  <MagneticButton
+                    strength={0.25}
                     type="submit"
                     disabled={!replyText.trim() || isSending}
-                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-lg text-xs font-medium transition-colors shadow-2xs cursor-pointer flex items-center space-x-1.5"
+                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-lg text-xs font-medium transition-colors shadow-2xs flex items-center space-x-1.5"
                   >
                     <Send className="w-3 h-3" />
                     <span>{isSending ? 'Sending...' : 'Send'}</span>
-                  </button>
+                  </MagneticButton>
                 </div>
               </form>
             </div>
+
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3 bg-slate-50/20">
               <div className="w-12 h-12 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center">

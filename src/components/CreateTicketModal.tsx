@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { ChannelType, TicketPriority } from '../types';
+import { MagneticButton } from './MagneticButton';
+
 
 interface CreateTicketModalProps {
   isOpen: boolean;
@@ -246,10 +248,11 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
             >
               Cancel
             </button>
-            <button
+            <MagneticButton
+              strength={0.25}
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-lg text-xs font-medium transition-colors shadow-2xs cursor-pointer flex items-center space-x-1.5"
+              className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-lg text-xs font-medium transition-colors shadow-2xs flex items-center space-x-1.5"
             >
               {isSubmitting ? (
                 <>
@@ -259,7 +262,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
               ) : (
                 <span>Create Ticket</span>
               )}
-            </button>
+            </MagneticButton>
           </div>
         </form>
       </div>

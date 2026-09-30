@@ -21,8 +21,10 @@ import {
   X
 } from 'lucide-react';
 import { InstagramIcon } from './icons/InstagramIcon';
+import { MagneticButton } from './MagneticButton';
 import { useCustomization } from '../context/CustomizationContext';
 import { ChannelType, Ticket, TicketPriority, TicketStatus } from '../types';
+
 
 interface TicketsViewProps {
   onNewTicketClick: () => void;
@@ -188,14 +190,14 @@ export const TicketsView: React.FC<TicketsViewProps> = ({ onNewTicketClick }) =>
             />
           </div>
 
-          <button
-            type="button"
+          <MagneticButton
+            strength={0.25}
             onClick={onNewTicketClick}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium shadow-2xs transition-colors cursor-pointer whitespace-nowrap"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium shadow-2xs transition-colors whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create Ticket</span>
-          </button>
+          </MagneticButton>
         </div>
       </div>
 

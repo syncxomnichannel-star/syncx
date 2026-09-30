@@ -10,6 +10,8 @@ import {
 import { useCustomization } from '../context/CustomizationContext';
 import { NavTabId } from '../types';
 
+import { MagneticButton } from './MagneticButton';
+
 interface HeaderProps {
   activeTab: NavTabId;
   onNewTicketClick: () => void;
@@ -86,19 +88,20 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </button>
 
-        {/* Real-time Demo Simulation Button */}
-        <button
+        {/* Real-time Demo Simulation Button (Magnetic) */}
+        <MagneticButton
+          strength={0.24}
           onClick={handleSimulate}
           disabled={isSimulating}
           title="Simulate Inbound Customer Message (Demo)"
-          className={`flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-700 rounded-lg text-xs font-medium transition-colors shadow-2xs cursor-pointer ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-slate-300 text-slate-700 rounded-lg text-xs font-medium transition-colors shadow-2xs ${
             isSimulating ? 'opacity-60' : ''
           }`}
         >
           <Zap className="w-3.5 h-3.5 text-amber-500" />
           <span className="hidden md:inline">Simulate Inbound Message</span>
           <span className="md:hidden">Simulate</span>
-        </button>
+        </MagneticButton>
 
         {/* Notifications Popover */}
         <div className="relative">
@@ -130,15 +133,17 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Primary Action Button */}
-        <button
+        {/* Primary Action Button (Magnetic) */}
+        <MagneticButton
+          strength={0.25}
           onClick={onNewTicketClick}
-          className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-2xs transition-colors cursor-pointer"
+          className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-2xs transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>New Ticket</span>
-        </button>
+        </MagneticButton>
       </div>
     </header>
   );
 };
+

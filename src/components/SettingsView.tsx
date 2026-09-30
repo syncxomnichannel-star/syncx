@@ -27,7 +27,6 @@ export const SettingsView: React.FC = () => {
   const {
     branding,
     updateBranding,
-    themeClasses,
     currentUser,
     updateProfile,
     agents,
@@ -53,9 +52,9 @@ export const SettingsView: React.FC = () => {
 
   const subTabs = [
     { id: 'profile', label: 'Profile & Team', icon: User },
-    { id: 'channels', label: 'Channel Integrations', icon: Layers },
-    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell },
-    { id: 'security', label: 'API Keys & Security', icon: Key },
+    { id: 'channels', label: 'Channel Connectors', icon: Layers },
+    { id: 'notifications', label: 'Alerts & Automation', icon: Bell },
+    { id: 'security', label: 'API Keys & Secrets', icon: Key },
     { id: 'customizer', label: 'Visual Customizer', icon: Palette }
   ] as const;
 
@@ -63,7 +62,10 @@ export const SettingsView: React.FC = () => {
     e.preventDefault();
     setIsSaving(true);
     await updateProfile(profileForm);
-    setTimeout(() => setIsSaving(false), 1500);
+    setTimeout(() => {
+      setIsSaving(false);
+      showToast('Profile Saved', 'Your user profile details have been updated.', 'success');
+    }, 400);
   };
 
   const copyToClipboard = (text: string, label: string) => {
@@ -75,30 +77,30 @@ export const SettingsView: React.FC = () => {
     const newKey = 'syncx_live_pk_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 8);
     setCustomApiKey(newKey);
     updateSecurity({ stitchApiKey: newKey });
-    showToast('Key Generated', 'A new secret key has been generated.', 'success');
+    showToast('Key Generated', 'A new production gateway key was generated.', 'success');
   };
 
   const colorOptions: Array<{ id: typeof branding.primaryColor; name: string; class: string }> = [
-    { id: 'indigo', name: 'Indigo (Sync X)', class: 'bg-indigo-600' },
-    { id: 'blue', name: 'Enterprise Blue', class: 'bg-blue-600' },
-    { id: 'purple', name: 'Cyber Violet', class: 'bg-purple-600' },
-    { id: 'emerald', name: 'Emerald SaaS', class: 'bg-emerald-600' },
-    { id: 'rose', name: 'Rose Sunset', class: 'bg-rose-600' },
-    { id: 'amber', name: 'Amber Gold', class: 'bg-amber-600' }
+    { id: 'indigo', name: 'Indigo (Default)', class: 'bg-indigo-600' },
+    { id: 'blue', name: 'Blue', class: 'bg-blue-600' },
+    { id: 'purple', name: 'Violet', class: 'bg-purple-600' },
+    { id: 'emerald', name: 'Emerald', class: 'bg-emerald-600' },
+    { id: 'rose', name: 'Rose', class: 'bg-rose-600' },
+    { id: 'amber', name: 'Amber', class: 'bg-amber-600' }
   ];
 
   const getChannelIcon = (type: ChannelType) => {
     switch (type) {
       case 'WhatsApp':
-        return <Smartphone className="w-5 h-5 text-emerald-600" />;
+        return <Smartphone className="w-4 h-4 text-emerald-600" />;
       case 'Telegram':
-        return <Send className="w-5 h-5 text-sky-600" />;
+        return <Send className="w-4 h-4 text-sky-600" />;
       case 'Email':
-        return <Mail className="w-5 h-5 text-blue-600" />;
+        return <Mail className="w-4 h-4 text-blue-600" />;
       case 'Web Chat':
-        return <Globe className="w-5 h-5 text-amber-600" />;
+        return <Globe className="w-4 h-4 text-amber-600" />;
       case 'Instagram':
-        return <InstagramIcon className="w-5 h-5 text-pink-600" />;
+        return <InstagramIcon className="w-4 h-4 text-pink-600" />;
     }
   };
 
@@ -110,12 +112,13 @@ export const SettingsView: React.FC = () => {
   const handleSaveChannel = async (id: string) => {
     await updateChannel(id, { webhookUrl: channelWebhookInput });
     setEditingChannelId(null);
+    showToast('Webhook Updated', 'Channel gateway endpoint updated successfully.', 'success');
   };
 
   return (
-    <div className="p-6 sm:p-8 space-y-6 max-w-6xl mx-auto">
-      {/* Sub Tabs */}
-      <div className="flex items-center space-x-2 border-b border-slate-200 pb-4 overflow-x-auto">
+    <div className="p-6 sm:p-8 space-y-6 max-w-5xl mx-auto">
+      {/* Sub Tabs Navigation */}
+      <div className="flex items-center space-x-1.5 p-1 bg-slate-100/90 rounded-lg border border-slate-200/70 overflow-x-auto w-fit">
         {subTabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeSubTab === tab.id;
@@ -123,13 +126,13 @@ export const SettingsView: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer whitespace-nowrap shadow-2xs ${
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? `${themeClasses.bg} text-white shadow-md shadow-indigo-600/20`
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white border border-slate-200/80'
+                  ? 'bg-white text-slate-900 shadow-2xs font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-3.5 h-3.5" />
               <span>{tab.label}</span>
             </button>
           );
@@ -139,70 +142,75 @@ export const SettingsView: React.FC = () => {
       {/* Sub Tab: Profile & Team */}
       {activeSubTab === 'profile' && (
         <div className="space-y-6">
-          <form onSubmit={handleProfileSubmit} className="space-y-6">
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-2xs">
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">
-                Operator Account
-              </h4>
+          <form onSubmit={handleProfileSubmit} className="space-y-5">
+            <div className="bg-white border border-slate-200/70 rounded-xl p-5 sm:p-6 space-y-5 shadow-2xs">
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Operator Account
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Update your display name, email, and timezone settings
+                </p>
+              </div>
 
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-4 pt-1">
                 <img
                   src={profileForm.avatar}
                   alt="Avatar"
-                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-indigo-500/20 shadow-xs"
+                  className="w-14 h-14 rounded-full object-cover ring-1 ring-slate-200"
                 />
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <button
                     type="button"
                     onClick={() => {
                       const newUrl = prompt('Enter image URL for avatar:', profileForm.avatar);
                       if (newUrl) setProfileForm({ ...profileForm, avatar: newUrl });
                     }}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 transition-all hover:shadow-xs hover:-translate-y-0.5 cursor-pointer"
+                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg border border-slate-200 transition-colors cursor-pointer"
                   >
                     Change Photo
                   </button>
-                  <p className="text-[11px] text-slate-400 font-medium">Avatar URL or profile image asset.</p>
+                  <p className="text-[11px] text-slate-400">PNG, JPG, or HTTPS avatar URL</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
                   <input
                     type="text"
                     value={profileForm.fullName}
                     onChange={e => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Work Email Address</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Work Email</label>
                   <input
                     type="email"
                     value={profileForm.email}
                     onChange={e => setProfileForm({ ...profileForm, email: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Role Title</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Role Title</label>
                   <input
                     type="text"
                     value={profileForm.role}
                     onChange={e => setProfileForm({ ...profileForm, role: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Default Timezone</label>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Default Timezone</label>
                   <select
                     value={profileForm.timezone}
                     onChange={e => setProfileForm({ ...profileForm, timezone: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-normal text-slate-800 focus:outline-none focus:border-slate-400"
                   >
                     <option value="UTC+05:30 (Asia/Kolkata)">UTC+05:30 (Asia/Kolkata)</option>
                     <option value="UTC-05:00 (US Eastern Time)">UTC-05:00 (US Eastern Time)</option>
@@ -217,24 +225,26 @@ export const SettingsView: React.FC = () => {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className={`px-5 py-2.5 ${themeClasses.bg} ${themeClasses.hoverBg} text-white font-bold text-xs rounded-xl flex items-center space-x-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer`}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center space-x-1.5"
               >
-                {isSaving ? <Check className="w-4 h-4 text-emerald-200" /> : <Save className="w-4 h-4" />}
-                <span>{isSaving ? 'Saved Changes!' : 'Save Profile'}</span>
+                {isSaving ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Save className="w-3.5 h-3.5" />}
+                <span>{isSaving ? 'Saved Changes' : 'Save Profile'}</span>
               </button>
             </div>
           </form>
 
           {/* Team Members Roster */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-4 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-indigo-600" />
-                <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+          <div className="bg-white border border-slate-200/70 rounded-xl p-5 sm:p-6 space-y-4 shadow-2xs">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900">
                   Support Operations Specialists ({agents.length})
                 </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Available team members for automatic ticket assignment
+                </p>
               </div>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
                 All Available
               </span>
             </div>
@@ -243,24 +253,24 @@ export const SettingsView: React.FC = () => {
               {agents.map(agent => (
                 <div
                   key={agent.id}
-                  className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex items-center justify-between"
+                  className="p-3 rounded-lg bg-slate-50 border border-slate-200/60 flex items-center justify-between"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="relative">
                       <img
                         src={agent.avatar}
                         alt={agent.name}
-                        className="w-10 h-10 rounded-xl object-cover ring-1 ring-black/5"
+                        className="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
                       />
-                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-white" />
                     </div>
                     <div>
-                      <h5 className="text-xs font-bold text-slate-900">{agent.name}</h5>
-                      <p className="text-[10px] text-slate-500 font-medium">{agent.role}</p>
+                      <h5 className="text-xs font-semibold text-slate-900">{agent.name}</h5>
+                      <p className="text-[10px] text-slate-400 font-normal">{agent.role}</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
-                    {agent.assignedTicketsCount || 2} Cases
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    {agent.assignedTicketsCount || 0} active cases
                   </span>
                 </div>
               ))}
@@ -269,83 +279,86 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {/* Sub Tab: Channel Integrations */}
+      {/* Sub Tab: Channel Connectors */}
       {activeSubTab === 'channels' && (
         <div className="space-y-4">
-          {channels.map(channel => (
-            <div
-              key={channel.id}
-              className="p-5 bg-white border border-slate-200/80 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-slate-100 rounded-2xl">{getChannelIcon(channel.type)}</div>
-                <div>
-                  <h5 className="text-xs font-bold text-slate-900">{channel.name}</h5>
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    {channel.category || channel.type} • Avg Response: {channel.avgResponseTime}
-                  </p>
-                  {channel.webhookUrl && (
-                    <p className="text-[10px] text-slate-400 font-mono truncate max-w-sm mt-0.5">
-                      {channel.webhookUrl}
+          <div className="bg-white border border-slate-200/70 rounded-xl p-5 shadow-2xs">
+            <h4 className="text-sm font-semibold text-slate-900">Channel Gateways</h4>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Live status, response latency, and webhook endpoints for customer communications
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {channels.map(channel => (
+              <div
+                key={channel.id}
+                className="bg-white border border-slate-200/70 rounded-xl p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 rounded-lg bg-slate-100 text-slate-600">
+                    {getChannelIcon(channel.type)}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h5 className="text-xs font-semibold text-slate-900">{channel.name}</h5>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        Latency: {channel.avgResponseTime}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-md">
+                      {channel.webhookUrl || `https://api.syncx.io/v1/webhooks/${channel.type.toLowerCase()}`}
                     </p>
-                  )}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 self-end sm:self-center">
+                  <span className="text-[10px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+                    {channel.status}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenChannelEdit(channel)}
+                    className="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                  >
+                    Configure
+                  </button>
                 </div>
               </div>
-
-              <div className="flex items-center space-x-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const next = channel.status === 'Connected' ? 'Disconnected' : 'Connected';
-                    updateChannel(channel.id, { status: next });
-                  }}
-                  className={`text-[11px] font-bold px-3 py-1 rounded-xl border cursor-pointer transition-colors ${
-                    channel.status === 'Connected'
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                      : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
-                  }`}
-                >
-                  {channel.status}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleOpenChannelEdit(channel)}
-                  className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 hover:border-slate-300 transition-all hover:-translate-y-0.5 cursor-pointer"
-                >
-                  Configure
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           {/* Channel Configure Modal */}
           {editingChannelId && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-xs animate-in fade-in">
-              <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-                <h4 className="text-sm font-bold text-slate-900">Configure Channel Webhook</h4>
-                <p className="text-xs text-slate-500">
-                  Update the inbound webhook endpoint for this gateway.
-                </p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/30 backdrop-blur-2xs animate-in fade-in">
+              <div className="bg-white border border-slate-200 rounded-xl max-w-md w-full p-5 shadow-xl space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Webhook URL</label>
+                  <h4 className="text-sm font-semibold text-slate-900">Configure Webhook</h4>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Update the incoming webhook URL for this channel gateway.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Webhook URL</label>
                   <input
                     type="text"
                     value={channelWebhookInput}
                     onChange={e => setChannelWebhookInput(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 focus:outline-none"
                   />
                 </div>
-                <div className="flex justify-end gap-2 pt-2">
+                <div className="flex justify-end gap-2 pt-1">
                   <button
+                    type="button"
                     onClick={() => setEditingChannelId(null)}
-                    className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold"
+                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleSaveChannel(editingChannelId)}
-                    className="px-4 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-bold"
+                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium cursor-pointer"
                   >
                     Save URL
                   </button>
@@ -356,70 +369,73 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {/* Sub Tab: Notifications & Alerts */}
+      {/* Sub Tab: Alerts & Automation */}
       {activeSubTab === 'notifications' && (
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-2xs">
-          <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">
-            Alert Preferences
-          </h4>
+        <div className="bg-white border border-slate-200/70 rounded-xl p-5 sm:p-6 space-y-4 shadow-2xs">
+          <div>
+            <h4 className="text-sm font-semibold text-slate-900">Alert Preferences</h4>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Configure automated notifications and routing rules
+            </p>
+          </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/60">
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-200/60">
               <div>
-                <p className="text-xs font-bold text-slate-900">Email Digest Notifications</p>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Receive daily performance reports and SLA breach alerts in your inbox.
+                <p className="text-xs font-semibold text-slate-900">Daily Digest Email</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Receive summarized metrics and SLA reports in your inbox.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => updateNotifications({ emailDigest: !notifications.emailDigest })}
-                className="text-indigo-600 transition-transform active:scale-90 cursor-pointer"
+                className="cursor-pointer"
               >
                 {notifications.emailDigest ? (
-                  <ToggleRight className="w-8 h-8 text-indigo-600" />
+                  <ToggleRight className="w-7 h-7 text-slate-900" />
                 ) : (
-                  <ToggleLeft className="w-8 h-8 text-slate-300" />
+                  <ToggleLeft className="w-7 h-7 text-slate-300" />
                 )}
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/60">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-200/60">
               <div>
-                <p className="text-xs font-bold text-slate-900">Slack Ticket Alerts</p>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Ping #support-ops when high-priority or urgent tickets are created.
+                <p className="text-xs font-semibold text-slate-900">Urgent Ticket Slack Ping</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Send high-priority customer alerts to the support Slack channel.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => updateNotifications({ slackAlerts: !notifications.slackAlerts })}
-                className="text-indigo-600 transition-transform active:scale-90 cursor-pointer"
+                className="cursor-pointer"
               >
                 {notifications.slackAlerts ? (
-                  <ToggleRight className="w-8 h-8 text-indigo-600" />
+                  <ToggleRight className="w-7 h-7 text-slate-900" />
                 ) : (
-                  <ToggleLeft className="w-8 h-8 text-slate-300" />
+                  <ToggleLeft className="w-7 h-7 text-slate-300" />
                 )}
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/60">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 border border-slate-200/60">
               <div>
-                <p className="text-xs font-bold text-slate-900">Auto-Assign Tickets</p>
-                <p className="text-[11px] text-slate-500 font-medium">
-                  Smart round-robin assignment based on agent load and channel specialization.
+                <p className="text-xs font-semibold text-slate-900">Smart Round-Robin Auto-Assign</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Automatically distribute newly arrived tickets based on specialist availability.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => updateNotifications({ autoAssign: !notifications.autoAssign })}
-                className="text-indigo-600 transition-transform active:scale-90 cursor-pointer"
+                className="cursor-pointer"
               >
                 {notifications.autoAssign ? (
-                  <ToggleRight className="w-8 h-8 text-indigo-600" />
+                  <ToggleRight className="w-7 h-7 text-slate-900" />
                 ) : (
-                  <ToggleLeft className="w-8 h-8 text-slate-300" />
+                  <ToggleLeft className="w-7 h-7 text-slate-300" />
                 )}
               </button>
             </div>
@@ -427,78 +443,78 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {/* Sub Tab: API Keys & Security */}
+      {/* Sub Tab: API Keys & Secrets */}
       {activeSubTab === 'security' && (
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-2xs">
-          <div className="flex items-center justify-between">
+        <div className="bg-white border border-slate-200/70 rounded-xl p-5 sm:p-6 space-y-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <div>
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">
-                Production Gateway Keys
-              </h4>
-              <p className="text-xs text-slate-500 font-medium">
-                Use these credentials to connect inbound webhooks and automation tools.
+              <h4 className="text-sm font-semibold text-slate-900">API Credentials</h4>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Integration keys for webhook gateways and backend services
               </p>
             </div>
             <button
               type="button"
               onClick={handleGenerateKey}
-              className={`px-3.5 py-2 ${themeClasses.bg} ${themeClasses.hoverBg} text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer`}
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-medium shadow-2xs transition-colors cursor-pointer"
             >
-              Generate New Key
+              Generate Key
             </button>
           </div>
 
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-slate-500 font-bold flex items-center gap-1.5">
-                <Key className="w-3.5 h-3.5 text-indigo-600" /> Live Omnichannel Gateway Key
-              </span>
-              <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Active
-              </span>
+          <div className="space-y-3">
+            <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-lg space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-slate-400" />
+                  Live Gateway Key
+                </span>
+                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60 font-medium">
+                  Active
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={customApiKey}
+                  className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-mono text-slate-800 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(customApiKey, 'Gateway Key')}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-medium cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                readOnly
-                value={customApiKey}
-                className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono text-indigo-700 font-bold focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => copyToClipboard(customApiKey, 'Gateway API Key')}
-                className="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-300 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all hover:shadow-xs cursor-pointer"
-              >
-                <Copy className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Copy Key</span>
-              </button>
-            </div>
-          </div>
 
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-slate-500 font-bold flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-indigo-600" /> Webhook Signing Secret
-              </span>
-              <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                Secured
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                readOnly
-                value={customSecret}
-                className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-700 font-bold focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => copyToClipboard(customSecret, 'Webhook Secret')}
-                className="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-indigo-300 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all hover:shadow-xs cursor-pointer"
-              >
-                <Copy className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Copy Secret</span>
-              </button>
+            <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-lg space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-slate-400" />
+                  Webhook Signing Secret
+                </span>
+                <span className="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200/60 font-medium">
+                  Secured
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={customSecret}
+                  className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-mono text-slate-800 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(customSecret, 'Webhook Secret')}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-md text-xs font-medium cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -506,73 +522,73 @@ export const SettingsView: React.FC = () => {
 
       {/* Sub Tab: Visual Customizer */}
       {activeSubTab === 'customizer' && (
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 space-y-6 shadow-2xs">
+        <div className="bg-white border border-slate-200/70 rounded-xl p-5 sm:p-6 space-y-5 shadow-2xs">
           <div>
-            <h4 className="text-sm font-bold text-slate-900">Visual Brand Customizer</h4>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Change logo text, company name, hero headers, color themes, or export your operational reports.
+            <h4 className="text-sm font-semibold text-slate-900">Workspace Customization</h4>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Customize company naming, badge text, and workspace theme accents
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Company Name</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Company Name</label>
               <input
                 type="text"
                 value={branding.companyName}
                 onChange={e => updateBranding({ companyName: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Badge Symbol</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Badge</label>
               <input
                 type="text"
                 value={branding.companyBadge}
                 onChange={e => updateBranding({ companyBadge: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
+                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Tagline</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Tagline</label>
               <input
                 type="text"
                 value={branding.tagline}
                 onChange={e => updateBranding({ tagline: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-normal text-slate-800 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-2">Accent Color Theme</label>
+            <label className="block text-xs font-medium text-slate-700 mb-2">Primary Accent</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
               {colorOptions.map(opt => (
                 <button
                   key={opt.id}
                   type="button"
                   onClick={() => updateBranding({ primaryColor: opt.id })}
-                  className={`p-2.5 rounded-2xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
+                  className={`p-2 rounded-lg border flex flex-col items-center gap-1 transition-colors cursor-pointer ${
                     branding.primaryColor === opt.id
-                      ? 'border-slate-800 bg-slate-50 ring-2 ring-indigo-500/20 font-bold'
+                      ? 'border-slate-800 bg-slate-50 font-medium'
                       : 'border-slate-200 hover:bg-slate-50'
                   }`}
                 >
-                  <span className={`w-5 h-5 rounded-full ${opt.class}`} />
+                  <span className={`w-4 h-4 rounded-full ${opt.class}`} />
                   <span className="text-[11px] text-slate-700">{opt.name.split(' ')[0]}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
             <button
               type="button"
               onClick={() => exportReport('json')}
-              className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-medium flex items-center space-x-1.5 cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              <span>Export Operational Report (JSON)</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Report (JSON)</span>
             </button>
           </div>
         </div>

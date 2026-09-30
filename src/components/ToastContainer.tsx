@@ -7,7 +7,7 @@ export const ToastContainer: React.FC = () => {
   const { toasts, dismissToast } = useCustomization();
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3 max-w-sm w-full pointer-events-none">
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 max-w-sm w-full pointer-events-none">
       {toasts.map(toast => (
         <ToastItem key={toast.id} toast={toast} onDismiss={dismissToast} />
       ))}
@@ -22,38 +22,31 @@ const ToastItem: React.FC<{
   useEffect(() => {
     const timer = setTimeout(() => {
       onDismiss(toast.id);
-    }, 4000);
+    }, 3500);
     return () => clearTimeout(timer);
   }, [toast.id, onDismiss]);
 
   const icons = {
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-600" />,
-    error: <AlertCircle className="w-5 h-5 text-rose-600" />,
-    info: <Info className="w-5 h-5 text-indigo-600" />
-  };
-
-  const styleClasses = {
-    success: 'border-emerald-200 bg-emerald-50/95 text-emerald-950',
-    error: 'border-rose-200 bg-rose-50/95 text-rose-950',
-    info: 'border-indigo-200 bg-indigo-50/95 text-indigo-950'
+    success: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+    error: <AlertCircle className="w-4 h-4 text-rose-400" />,
+    info: <Info className="w-4 h-4 text-indigo-400" />
   };
 
   return (
-    <div
-      className={`pointer-events-auto flex items-start space-x-3 p-4 rounded-2xl border shadow-lg backdrop-blur-md transition-all duration-300 transform translate-y-0 ${styleClasses[toast.type]}`}
-    >
+    <div className="pointer-events-auto flex items-start space-x-2.5 p-3 rounded-xl bg-slate-900/95 text-white border border-slate-800 shadow-xl backdrop-blur-md transition-all duration-200 animate-in fade-in slide-in-from-bottom-2">
       <div className="flex-shrink-0 mt-0.5">{icons[toast.type]}</div>
       <div className="flex-1 min-w-0">
-        <h5 className="text-xs font-bold leading-tight">{toast.title}</h5>
+        <h5 className="text-xs font-semibold leading-tight text-white">{toast.title}</h5>
         {toast.description && (
-          <p className="text-[11px] opacity-85 mt-0.5 leading-snug">{toast.description}</p>
+          <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">{toast.description}</p>
         )}
       </div>
       <button
+        type="button"
         onClick={() => onDismiss(toast.id)}
-        className="flex-shrink-0 text-slate-400 hover:text-slate-700 p-0.5 rounded-lg transition-colors cursor-pointer"
+        className="flex-shrink-0 text-slate-400 hover:text-white p-0.5 rounded cursor-pointer"
       >
-        <X className="w-4 h-4" />
+        <X className="w-3.5 h-3.5" />
       </button>
     </div>
   );

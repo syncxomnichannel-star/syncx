@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   Plus,
-  RotateCcw,
   Search,
   Settings,
   Ticket as TicketIcon,
@@ -60,7 +59,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const commands = [
     {
       id: 'dashboard',
-      title: 'Go to Dashboard Overview',
+      title: 'Go to Operations Dashboard',
       category: 'Navigation',
       icon: LayoutDashboard,
       run: () => {
@@ -70,7 +69,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: 'omnichannel',
-      title: 'Open Omnichannel Control Center',
+      title: 'Open Omnichannel Inbox',
       category: 'Navigation',
       icon: MessageSquare,
       run: () => {
@@ -80,7 +79,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: 'tickets',
-      title: 'View All Customer Support Tickets',
+      title: 'View Ticket Queue',
       category: 'Navigation',
       icon: TicketIcon,
       run: () => {
@@ -100,7 +99,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: 'simulate-msg',
-      title: 'Simulate Incoming Inbound Message (Live Demo)',
+      title: 'Simulate Inbound Message (Demo)',
       category: 'Actions',
       icon: Zap,
       run: () => {
@@ -110,21 +109,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     },
     {
       id: 'settings',
-      title: 'Manage Platform & Channel Settings',
+      title: 'Open Platform Settings',
       category: 'Navigation',
       icon: Settings,
       run: () => {
         onSelectTab('settings');
-        onClose();
-      }
-    },
-    {
-      id: 'toggle-edit',
-      title: 'Toggle Live Visual Edit Mode',
-      category: 'Customization',
-      icon: Edit3,
-      run: () => {
-        toggleEditMode();
         onClose();
       }
     },
@@ -147,27 +136,27 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 p-4 bg-slate-950/40 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white border border-slate-200/90 rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden animate-in zoom-in-95">
-        <div className="p-4 border-b border-slate-100 flex items-center space-x-3 bg-white">
-          <Search className="w-5 h-5 text-indigo-600" />
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-slate-950/30 backdrop-blur-2xs animate-in fade-in">
+      <div className="bg-white border border-slate-200/90 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden">
+        <div className="p-3 border-b border-slate-100 flex items-center space-x-2.5 bg-white">
+          <Search className="w-4 h-4 text-slate-400" />
           <input
             type="text"
             autoFocus
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder={`Search ${branding.companyName || 'Sync'} commands, channels, or navigation...`}
-            className="flex-1 bg-transparent text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-none"
+            placeholder={`Search commands, channels...`}
+            className="flex-1 bg-transparent text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-none"
           />
-          <span className="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded-md border border-slate-200 font-bold">
+          <span className="text-[10px] font-mono bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded border border-slate-200">
             ESC
           </span>
         </div>
 
-        <div className="max-h-84 overflow-y-auto p-2 space-y-1 bg-slate-50/50">
+        <div className="max-h-80 overflow-y-auto p-1.5 space-y-0.5 bg-slate-50/40">
           {filtered.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-8">
-              No matching commands found.
+            <p className="text-xs text-slate-400 text-center py-6">
+              No matching commands.
             </p>
           ) : (
             filtered.map(cmd => {
@@ -176,20 +165,20 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 <button
                   key={cmd.id}
                   onClick={cmd.run}
-                  className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-white hover:shadow-xs text-left transition-all group cursor-pointer"
+                  className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-100/80 text-left transition-colors cursor-pointer"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-xl bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-600 transition-colors">
-                      <Icon className="w-4 h-4" />
+                  <div className="flex items-center space-x-2.5">
+                    <div className="p-1.5 rounded-md bg-slate-100 text-slate-600">
+                      <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-950">
+                      <p className="text-xs font-medium text-slate-900">
                         {cmd.title}
                       </p>
                       <p className="text-[10px] text-slate-400">{cmd.category}</p>
                     </div>
                   </div>
-                  <span className="text-slate-300 group-hover:text-indigo-600 transition-colors text-xs font-bold">
+                  <span className="text-slate-300 text-xs">
                     ↵
                   </span>
                 </button>

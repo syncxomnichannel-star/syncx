@@ -10,7 +10,7 @@ import {
   Send,
   Smartphone,
   Sparkles,
-  Zap
+  Download
 } from 'lucide-react';
 import { InstagramIcon } from './icons/InstagramIcon';
 import { useCustomization } from '../context/CustomizationContext';
@@ -51,214 +51,165 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-slate-900 p-7 shadow-lg shadow-indigo-600/10 text-white">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium">
-              <Zap className="w-3.5 h-3.5 text-amber-300" />
-              <span>Sync X Production Engine Live</span>
-            </div>
-            <h3 className="text-2xl font-extrabold tracking-tight text-white">Production Overview</h3>
-            <p className="text-indigo-100 text-sm max-w-xl font-normal leading-relaxed">
-              Your omnichannel workspace is connected across WhatsApp, Telegram, Email, Web Chat, and Instagram.
-            </p>
+    <div className="p-6 sm:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* Top Operations Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+              Operations Overview
+            </h3>
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/70">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>All Channels Healthy</span>
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => exportReport('json')}
-              className="px-4 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 rounded-xl text-xs font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer whitespace-nowrap"
-            >
-              Export Report
-            </button>
-            <button
-              onClick={onOpenNewTicket}
-              className="px-4 py-2.5 bg-indigo-500/30 hover:bg-indigo-500/40 text-white rounded-xl text-xs font-bold border border-indigo-400/30 hover:-translate-y-0.5 transition-all cursor-pointer whitespace-nowrap"
-            >
-              + Create Ticket
-            </button>
-          </div>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Cross-channel customer support telemetry and real-time SLA metrics.
+          </p>
         </div>
-      </div>
 
-      {/* Key Performance Metrics with Working Filters */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="font-bold text-slate-900 text-base">Key Performance Metrics</h4>
-          <div className="flex items-center space-x-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+        <div className="flex items-center space-x-2.5">
+          {/* Time Range Selector */}
+          <div className="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/70 text-xs">
             {(['today', '7d', '30d'] as const).map(tab => (
               <button
                 key={tab}
+                type="button"
                 onClick={() => setTimeRange(tab)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs font-medium uppercase transition-colors cursor-pointer ${
                   timeRange === tab
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-white text-slate-900 shadow-2xs font-semibold'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 {tab}
               </button>
             ))}
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {metrics.map(metric => (
-            <div
-              key={metric.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-slate-500">{metric.title}</span>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                  <ArrowUpRight className="w-3 h-3 text-slate-400" />
-                  {metric.change}
-                </span>
-              </div>
-              <div className="flex items-baseline justify-between">
-                <p className="text-2xl font-extrabold text-slate-900 tracking-tight group-hover:text-indigo-600 transition-colors">
-                  {metric.value}
-                </p>
-                <span className="text-[11px] text-slate-400 font-medium">{metric.period}</span>
-              </div>
-            </div>
-          ))}
+          {/* Export Report Action */}
+          <button
+            type="button"
+            onClick={() => exportReport('json')}
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 rounded-lg text-xs font-medium shadow-2xs transition-colors cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <span>Export</span>
+          </button>
         </div>
       </div>
 
-      {/* Channel Volume & Live Activity Feed Split */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left: Channel Volume (1 col) */}
-        <div className="lg:col-span-1 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h4 className="font-bold text-slate-900 text-base">Channel Volume</h4>
-                <p className="text-xs text-slate-500">5 active channel streams</p>
-              </div>
-              <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
-                Live Data
+      {/* 4 Clean Metric KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {metrics.map(metric => (
+          <div
+            key={metric.id}
+            className="bg-white border border-slate-200/70 rounded-xl p-4 sm:p-5 shadow-2xs transition-colors hover:border-slate-300"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-slate-500">{metric.title}</span>
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-slate-600 bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200/60">
+                <ArrowUpRight className="w-3 h-3 text-slate-400" />
+                {metric.change}
               </span>
             </div>
-
-            <div className="space-y-4">
-              {channelVolume.map(chan => {
-                const Icon = getChannelIcon(chan.type);
-                return (
-                  <div key={chan.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center space-x-2 text-slate-700 font-semibold">
-                        <Icon className="w-4 h-4 text-indigo-600" />
-                        <span>{chan.name}</span>
-                      </div>
-                      <span className="text-slate-400 font-mono text-[11px]">
-                        {chan.count} ({chan.percent}%)
-                      </span>
-                    </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full bg-gradient-to-r ${chan.color} rounded-full transition-all duration-500`}
-                        style={{ width: `${Math.max(chan.percent, 8)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="flex items-baseline justify-between">
+              <p className="text-2xl font-semibold text-slate-900 tracking-tight">
+                {metric.value}
+              </p>
             </div>
+            <p className="text-[11px] text-slate-400 mt-1 font-normal">
+              {metric.period}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Two Column Layout: Channel Breakdown & Activity Feed */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Channel Volume Breakdown (7 cols) */}
+        <div className="lg:col-span-7 bg-white border border-slate-200/70 rounded-xl p-5 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">
+                Channel Volume & Distribution
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Inbound conversation share across supported connectors
+              </p>
+            </div>
+            <span className="text-[11px] font-medium text-slate-500">
+              5 Active Connectors
+            </span>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              Capacity: <strong className="text-slate-800">100% Operational</strong>
-            </span>
-            <button
-              onClick={() => onNavigateTab?.('omnichannel')}
-              className="text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              <span>Manager</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+          <div className="space-y-3.5">
+            {channelVolume.map(chan => {
+              const Icon = getChannelIcon(chan.type || (chan.name as ChannelType));
+
+              return (
+                <div key={chan.id || chan.name} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-2">
+                      <Icon className="w-3.5 h-3.5 text-slate-500" />
+                      <span className="font-medium text-slate-800">{chan.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-slate-500">
+                      <span>{chan.count}</span>
+                      <span className="font-semibold text-slate-900">{chan.percent}%</span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-indigo-600 h-full rounded-full transition-all duration-300"
+                      style={{ width: `${chan.percent}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right: Live Activity Feed (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h4 className="font-bold text-slate-900 text-base">Live Activity Feed</h4>
-                <p className="text-xs text-slate-500">Real-time team support actions in Sync X</p>
-              </div>
-              <button
-                onClick={() => showToast('Audit Log', 'Audit log loaded.', 'info')}
-                className="text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200 transition-all cursor-pointer"
-              >
-                View Log
-              </button>
+        {/* Live Operational Activity Timeline (5 cols) */}
+        <div className="lg:col-span-5 bg-white border border-slate-200/70 rounded-xl p-5 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">
+                Live Audit Activity
+              </h4>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Audit trail of system events, customer messages, and ticket updates
+              </p>
             </div>
-
-            <div className="space-y-3 max-h-[340px] overflow-y-auto pr-1">
-              {activities.length === 0 ? (
-                <div className="py-16 text-center space-y-3 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                  <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-                    <Activity className="w-6 h-6" />
-                  </div>
-                  <h5 className="text-xs font-bold text-slate-800">No Recent Activity Logged</h5>
-                  <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
-                    Incoming ticket activities and messages will update here in real time.
-                  </p>
-                </div>
-              ) : (
-                activities.slice(0, 6).map(act => (
-                  <div
-                    key={act.id}
-                    className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50 transition-colors flex items-start space-x-3.5"
-                  >
-                    <div className="p-2 rounded-lg bg-white border border-slate-200/80 shadow-2xs mt-0.5 flex-shrink-0">
-                      {act.type === 'message' ? (
-                        <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : act.type === 'ticket' ? (
-                        <Layers className="w-3.5 h-3.5 text-amber-600" />
-                      ) : act.type === 'ai' ? (
-                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                      ) : (
-                        <Activity className="w-3.5 h-3.5 text-slate-600" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-bold text-slate-900 truncate">{act.title}</p>
-                        <span className="text-[10px] font-mono text-slate-400 flex-shrink-0 ml-2">
-                          {act.time}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-600 font-medium mt-0.5 leading-normal">
-                        {act.description}
-                      </p>
-                      {act.actor && (
-                        <span className="inline-block text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200 mt-1 shadow-2xs">
-                          {act.actor}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/70">
+              Live Feed
+            </span>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>
-              Real-time synchronization: <strong className="text-slate-800">Active</strong>
-            </span>
-            <button
-              onClick={() => onNavigateTab?.('tickets')}
-              className="text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              <span>Ticket Queue</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+          <div className="space-y-3 overflow-y-auto max-h-[310px] pr-1">
+            {activities.slice(0, 6).map(act => (
+              <div
+                key={act.id}
+                className="flex items-start space-x-3 p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200/60 transition-colors"
+              >
+                <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Activity className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-800 leading-snug truncate">
+                    {act.title}
+                  </p>
+                  <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
+                    {act.description}
+                  </p>
+                  <span className="text-[10px] text-slate-400 font-mono mt-1 block">
+                    {act.time}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

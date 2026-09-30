@@ -95,7 +95,7 @@ const InteractiveKpiCard: React.FC<InteractiveKpiCardProps> = ({
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-between h-full">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+          <span className="text-xs font-semibold text-black dark:text-white group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
             {metric.title}
           </span>
           {/* Trend Badge: small pill with a translucent tinted background */}
@@ -123,7 +123,7 @@ const InteractiveKpiCard: React.FC<InteractiveKpiCardProps> = ({
           </p>
         </div>
 
-        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-2">
+        <p className="text-[11px] font-medium text-black dark:text-white mt-2">
           {metric.period}
         </p>
       </div>
@@ -175,7 +175,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <span>All Channels Healthy</span>
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-black dark:text-white font-medium mt-0.5">
             Cross-channel customer support telemetry and real-time SLA metrics.
           </p>
         </div>

@@ -98,7 +98,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
         setShowOtpPanel(true);
         setResendCountdown(60);
         setOtpDigits(['', '', '', '', '', '']);
-        setOtpSuccessMsg(`6-digit verification code dispatched to ${cleanEmail}`);
+        setOtpSuccessMsg(`6-digit verification code dispatched to ${cleanEmail}${data.devCode ? ` (Code: ${data.devCode})` : ''}`);
         setTimeout(() => {
           inputRefs.current[0]?.focus();
         }, 120);

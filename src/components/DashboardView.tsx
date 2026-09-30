@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Activity,
+  ArrowDownRight,
   ArrowUpRight,
   ChevronRight,
   Layers,
@@ -22,11 +23,29 @@ interface DashboardViewProps {
   onNavigateTab?: (tab: NavTabId) => void;
 }
 
+interface InteractiveKpiCardProps {
+  metric: MetricCardData;
+  isActive?: boolean;
+  onClick?: () => void;
+}
+
 /**
- * Interactive KPI Card with Apple-grade cursor spotlight
- * and tactile "shadowed-in" inset depth on hover.
+ * Polished Glassmorphism KPI Card
+ * Features:
+ * - Semi-transparent background with backdrop blur & saturation
+ * - 1px border & layered soft shadow with inset top highlight
+ * - 20px border radius
+ * - Faint gradient sheen across top
+ * - Dynamic cursor spotlight
+ * - Translucent tinted trend badge pills
+ * - Hover elevation (-4px) with smooth 250ms cubic-bezier transition
+ * - Active / selected blue-tinted glow
  */
-const InteractiveKpiCard: React.FC<{ metric: MetricCardData }> = ({ metric }) => {
+const InteractiveKpiCard: React.FC<InteractiveKpiCardProps> = ({
+  metric,
+  isActive = false,
+  onClick
+}) => {
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -41,40 +60,70 @@ const InteractiveKpiCard: React.FC<{ metric: MetricCardData }> = ({ metric }) =>
     setMousePos(null);
   };
 
+  const isDownward = metric.change.startsWith('-');
+  const TrendIcon = isDownward ? ArrowDownRight : ArrowUpRight;
+
   return (
     <div
+      onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative bg-white border border-slate-200/70 rounded-xl p-4 sm:p-5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.02),0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-[inset_0_2px_5px_rgba(15,23,42,0.05),0_12px_28px_-6px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:border-slate-300 transition-all duration-200 ease-out overflow-hidden group cursor-pointer"
+      className={`glass-kpi-card p-5 sm:p-6 cursor-pointer overflow-hidden group select-none ${
+        isActive ? 'is-active ring-1 ring-indigo-500/30' : ''
+      }`}
     >
+      {/* Faint gradient sheen across the top of each card (linear-gradient 135deg, white 40% to transparent) */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 rounded-t-[20px] transition-opacity duration-300"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 40%, transparent 100%)'
+        }}
+        aria-hidden="true"
+      />
+
       {/* Dynamic Cursor Spotlight Effect */}
       {mousePos && (
         <div
-          className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+          className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[20px]"
           style={{
-            background: `radial-gradient(220px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.05), transparent 70%)`
+            background: `radial-gradient(220px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.08), transparent 70%)`
           }}
+          aria-hidden="true"
         />
       )}
 
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">
+      {/* Content */}
+      <div className="relative z-10 flex flex-col justify-between h-full">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
             {metric.title}
           </span>
-          <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-slate-600 bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200/60 group-hover:scale-105 group-hover:border-slate-300 transition-all">
-            <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-emerald-600 transition-colors" />
-            {metric.change}
+          {/* Trend Badge: small pill with a translucent tinted background */}
+          <span
+            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border backdrop-blur-xs transition-transform duration-200 group-hover:scale-105 ${
+              metric.isPositive
+                ? 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30'
+                : 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30'
+            }`}
+          >
+            <TrendIcon
+              className={`w-3 h-3 ${
+                metric.isPositive
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-amber-600 dark:text-amber-400'
+              }`}
+            />
+            <span>{metric.change}</span>
           </span>
         </div>
 
-        <div className="flex items-baseline justify-between">
-          <p className="text-2xl font-semibold text-slate-900 tracking-tight group-hover:text-indigo-950 transition-colors">
+        <div className="flex items-baseline justify-between mt-1">
+          <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white group-hover:text-indigo-950 dark:group-hover:text-indigo-200 transition-colors">
             {metric.value}
           </p>
         </div>
 
-        <p className="text-[11px] text-slate-400 mt-1 font-normal">
+        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-2">
           {metric.period}
         </p>
       </div>
@@ -86,6 +135,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenNewTicket,
   onNavigateTab
 }) => {
+  const [selectedMetricId, setSelectedMetricId] = useState<string>('metric-tickets');
   const {
     metrics,
     channelVolume,
@@ -161,11 +211,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 4 Interactive KPI Cards with Inset Depth and Cursor Spotlight */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map(metric => (
-          <InteractiveKpiCard key={metric.id} metric={metric} />
-        ))}
+      {/* 4 Restyled Glassmorphism KPI Cards with Soft Blurred Gradient Blobs behind */}
+      <div className="relative">
+        {/* Soft Blurred Gradient Blobs (indigo/blue and a hint of violet, ~15% opacity, blur 80px) */}
+        <div
+          className="pointer-events-none absolute -inset-x-4 -top-8 -bottom-8 overflow-hidden -z-10"
+          aria-hidden="true"
+        >
+          <div className="absolute top-2 left-[5%] w-72 h-72 rounded-full bg-indigo-500/15 blur-[80px]" />
+          <div className="absolute -top-6 left-[35%] w-80 h-80 rounded-full bg-blue-500/15 blur-[80px]" />
+          <div className="absolute top-4 right-[25%] w-72 h-72 rounded-full bg-violet-500/15 blur-[80px]" />
+          <div className="absolute -bottom-6 right-[5%] w-64 h-64 rounded-full bg-indigo-400/15 blur-[80px]" />
+        </div>
+
+        {/* 4 Interactive KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {metrics.map(metric => (
+            <InteractiveKpiCard
+              key={metric.id}
+              metric={metric}
+              isActive={selectedMetricId === metric.id}
+              onClick={() => setSelectedMetricId(metric.id)}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Two Column Layout: Channel Breakdown & Activity Feed */}

@@ -35,7 +35,7 @@ export async function getMessages(conversationId: string): Promise<ChatMessage[]
 export async function sendMessage(
   conversationId: string,
   text: string,
-  senderName: string = 'Sarah Jenkins',
+  senderName: string = 'Gayathri',
   isAgent: boolean = true
 ): Promise<ChatMessage> {
   await new Promise(resolve => setTimeout(resolve, 100));

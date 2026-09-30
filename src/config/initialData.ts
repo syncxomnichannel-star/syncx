@@ -159,10 +159,10 @@ export const initialTickets: Ticket[] = [];
 export const initialConversations: Conversation[] = [];
 
 export const initialUserProfile: UserProfile = {
-  fullName: 'Sarah Jenkins',
-  email: 'sarah.jenkins@syncid.io',
+  fullName: 'Gayathri',
+  email: 'gayathri@syncmail.com',
   role: 'Head of Support Operations',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+  avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
   timezone: 'UTC+05:30 (Asia/Kolkata)'
 };
 

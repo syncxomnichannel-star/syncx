@@ -32,10 +32,10 @@ import {
 export const demoAgents: Agent[] = [
   {
     id: 'agent-1',
-    name: 'Sarah Jenkins',
-    email: 'sarah.jenkins@syncx.io',
+    name: 'Gayathri',
+    email: 'gayathri@syncmail.com',
     role: 'Head of Support Operations',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
     status: 'online',
     assignedTicketsCount: 0
   },
@@ -69,10 +69,10 @@ export const demoAgents: Agent[] = [
 ];
 
 export const demoUserProfile: UserProfile = {
-  fullName: 'Sarah Jenkins',
-  email: 'sarah.jenkins@syncx.io',
+  fullName: 'Gayathri',
+  email: 'gayathri@syncmail.com',
   role: 'Head of Support Operations',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+  avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=120',
   timezone: 'UTC+05:30 (Asia/Kolkata)'
 };
 

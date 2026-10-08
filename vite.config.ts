@@ -152,6 +152,7 @@ function createSmtpHandler(otpStore: Map<string, { code: string; expiresAt: numb
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     tailwindcss(),
